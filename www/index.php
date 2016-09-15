@@ -23,6 +23,7 @@ if ((isset($_POST['key']) && isset($_POST['value'])) && (is_string($_POST['key']
 <html>
 <head>
     <title>sfhacks Live Answers</title>
+    <link rel = 'icon' href = 'http://www.sfhacks.club/assets/icons/favicon.png'/>
     <script type = 'text/javascript' src = 'https://code.jquery.com/jquery-3.1.0.min.js' integrity = 'sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=' crossorigin = 'anonymous'></script>
     <script typ e= 'text/javascript' src = 'pocket.js'></script>
     <script type = 'text/javascript'>
@@ -63,7 +64,7 @@ if ((isset($_POST['key']) && isset($_POST['value'])) && (is_string($_POST['key']
                     $('#table table').html(html);
                 }
             });
-            Pocket.connect('127.0.0.1', 7998, 'server.php');
+            Pocket.connect('results.sfhacks.club', 7998, 'server.php');
             // keep server alive
             setInterval(function () {
                 if (Pocket.online())
