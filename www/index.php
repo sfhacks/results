@@ -7,11 +7,15 @@ $db = '../db.json';
 $password = 'jeanghantous';
 if (isset($_POST['password'])) {
     if ($_POST['password'] === md5($password)) {
-        if ((isset($_POST['key']) && isset($_POST['value'])) && (is_string($_POST['key']) && is_string($_POST['value']))) {
-            if (trim($_POST['key']) == '' || trim($_POST['value']) == '') die('No Blank Fields');
+        if (isset($_POST['key']) && is_string($_POST['key'])) {
+            if (trim($_POST['key']) == '') die('No Blank Keys');
             $snapshot = json_decode(file_get_contents($db), true);
-            $snapshot[$_POST['key']] = $_POST['value'];
-            if (file_put_contents($db, json_encode($snapshot)) === false) die('Failure to Update');
+            if ((!isset($_POST['value']) || !is_string($_POST['value']) || trim($_POST['value']) == ''))
+                unset($snapshot[$_POST['key']]);
+            else $snapshot[$_POST['key']] = $_POST['value'];
+            $json = json_encode($snapshot);
+            if (trim($json) == '' || $json == '[]') $json = '{}';
+            if (file_put_contents($db, $json) === false) die('Failure to Update');
             else die('Database Updated');
         } elseif (isset($_POST['clear']) && $_POST['clear']) {
             if (file_put_contents($db, "{}") === false) die('Failure to Clear');

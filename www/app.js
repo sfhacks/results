@@ -22,7 +22,7 @@ $(document).ready(function () {
         });
     };
     $('#testSub').click(send);
-    $('#testKey, #testVal').on('keyup', function (e) {
+    $('#testKey, #testVal, #testPwd').on('keyup', function (e) {
         if (e.which == 13 || e.keyCode == 13)
             send();
     });
