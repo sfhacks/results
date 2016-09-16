@@ -1,7 +1,7 @@
 var pocketServer = {
     domain: document.domain,
     port: 7998,
-    page: 'server.php'
+    page: 'results.php'
 };
 $(document).ready(function () {
     // set DOM events
