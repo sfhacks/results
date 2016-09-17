@@ -21,6 +21,7 @@
     border: 1px solid #999;
     border-spacing: 0;
     border-collapse: collapse;
+    opacity: 0;
     transition: opacity 0.2s ease;
     min-width: 280px;
     max-width: 350px;

@@ -4,6 +4,7 @@ var pocketServer = {
     page: 'results.php'
 };
 $(document).ready(function () {
+    $('#table table').css('opacity', '1');
     // set DOM events
     var send = function () {
         $.ajax({
@@ -62,12 +63,9 @@ $(document).ready(function () {
             (db.trim() == '' || db.trim() == '{}' || db.trim() == '{ }') ||
             (snapshot.trim() == '' || snapshot.trim() == '{}' || snapshot.trim() == '{ }')
         ) $('#table table').html("<tr class = 'darker'><th>No data</th></tr>");
-        else $('#table table').css('opacity', '1');
     });
     Pocket.onClose(function () {
-        $('#table table')
-            .html("<tr class = 'darker'><th>Connection closed/unavailable</th></tr>")
-                .css('opacity', '1')
+        $('#table table').html("<tr class = 'darker'><th>Connection closed/unavailable</th></tr>");
         ;
     });
     Pocket.connect(pocketServer.domain, pocketServer.port, pocketServer.page);
