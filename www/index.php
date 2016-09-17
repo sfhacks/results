@@ -44,7 +44,9 @@ if (isset($_POST['password'])) {
         <h1>sfhacks live results</h1>
         <br/>
         <div id = 'table'>
-            <table></table>
+            <table>
+                <tr class = 'darker'><th>No data</th></tr>
+            </table>
         </div>
         <br/><br/>
         <div id = 'form'>
