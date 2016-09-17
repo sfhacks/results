@@ -61,8 +61,14 @@ $(document).ready(function () {
         if ((typeof db === 'string' && typeof snapshot === 'string') &&
             (db.trim() == '' || db.trim() == '{}' || db.trim() == '{ }') ||
             (snapshot.trim() == '' || snapshot.trim() == '{}' || snapshot.trim() == '{ }')
-        ) $('#table table').css('opacity', '0');
+        ) $('#table table').html("<tr class = 'darker'><th>No data</th></tr>");
         else $('#table table').css('opacity', '1');
+    });
+    Pocket.onClose(function () {
+        $('#table table')
+            .html("<tr class = 'darker'><th>Connection closed/unavailable</th></tr>")
+                .css('opacity', '1')
+        ;
     });
     Pocket.connect(pocketServer.domain, pocketServer.port, pocketServer.page);
     // keep server alive

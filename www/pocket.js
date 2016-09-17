@@ -43,6 +43,7 @@ var Pocket = (function () {
                 ol = false;
                 ws.send(JSON.stringify({ command: 'close', id: id, ad: address, p: port}));
                 console.log('[POCKET] disconnected');
+                ev['close']();
                 return false;
             };
             ws.onmessage = function (e) {
@@ -56,6 +57,7 @@ var Pocket = (function () {
                     port = data.port;
                     ol = true;
                     console.log('[POCKET] connected');
+                    ev['open']();
                 }
                 // ws.send(JSON.stringify({ command: 'alive', id: id }));
                 return false;
@@ -86,23 +88,26 @@ var Pocket = (function () {
         onOpen: function () {
             var args = [].slice.apply(arguments);
             if (args.length > 0) {
-                if (Object.prototype.toString.call(args[0]) == '[object Function]') ev['onOpen'] = args[0];
-                else ev['onOpen'].apply(ev['onOpen'], args);
-            } else ev['onOpen']();
+                if (Object.prototype.toString.call(args[0]) == '[object Function]')
+                    ev['open'] = args[0];
+                else ev['open'].apply(ev['open'], args);
+            } else ev['open']();
         },
         onRun: function () {
             var args = [].slice.apply(arguments);
             if (args.length > 0) {
-                if (Object.prototype.toString.call(args[0]) == '[object Function]') ev['onRun'] = args[0];
-                else ev['onRun'].apply(ev['onRun'], args);
-            } else ev['onRun']();
+                if (Object.prototype.toString.call(args[0]) == '[object Function]')
+                    ev['run'] = args[0];
+                else ev['run'].apply(ev['run'], args);
+            } else ev['run']();
         },
         onClose: function () {
             var args = [].slice.apply(arguments);
             if (args.length > 0) {
-                if (Object.prototype.toString.call(args[0]) == '[object Function]') ev['onClose'] = args[0];
-                else ev['onClose'].apply(ev['onClose'], args);
-            } else ev['onClose']();
+                if (Object.prototype.toString.call(args[0]) == '[object Function]')
+                    ev['close'] = args[0];
+                else ev['close'].apply(ev['close'], args);
+            } else ev['close']();
         },
         online: function () { return ol; },
         getID: function () { return id; },
