@@ -27,7 +27,6 @@ $.ajax({
         value: 'a45d',
         password: 'sfhacks'
     },
-    dataType: 'text',
     success: function (data) {
         console.log(data);
     }
@@ -37,15 +36,12 @@ $.ajax({
 Pure JS AJAX:
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.onload = function () {
-    console.log(xhr.responseText);
-}
+xhr.onreadystatechange = function () {
+    if (xhr.readyState == 4 && xhr.status == 200)
+        console.log(xhr.responseText);
+};
 xhr.open('POST', 'http://results.sfhacks.club', true);
-request.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-request.send({
-    key: 'Joe',
-    value: 'a45d',
-    password: 'sfhacks'
-});
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+xhr.send('key=Joe&value=a45d&password=sfhacks');
 ```
 &nbsp;  
