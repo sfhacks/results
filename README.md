@@ -1,7 +1,9 @@
 # sfhacks results
-Web interface for collecting results and answers from students
+Web interface for collecting results and answers from students  
 &nbsp;  
-
+Libraries Used:  
+&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;[jQuery](https://jquery.com/) - v3.1.0  
+&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;[PocketJS](http://anuv.me/pocketjs) - v1.0 (by @anuvgupta)
 &nbsp;  
 ## How to submit answers
 Send an HTTP POST request to [results.sfhacks.club](http://results.sfhacks.club) with the following data:
@@ -35,13 +37,12 @@ $.ajax({
 Pure JS AJAX:
 ```javascript
 var xhr = new XMLHttpRequest();
-xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4 && xhr.status == 200)
-        console.log(xhr.responseText);
-};
+xhr.onload = function () {
+    console.log(xhr.responseText);
+}
 xhr.open('POST', 'http://results.sfhacks.club', true);
-xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-xhr.send({
+request.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+request.send({
     key: 'Joe',
     value: 'a45d',
     password: 'sfhacks'
