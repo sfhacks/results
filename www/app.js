@@ -4,9 +4,9 @@ var pocketServer = {
     page: 'results.php'
 };
 $(document).ready(function () {
-    $('#table table').css('opacity', '1');
     // set DOM events
     var send = function () {
+        // AJAX request for setting keys in database
         $.ajax({
             url: window.phpServer,
             method: 'POST',
@@ -22,12 +22,14 @@ $(document).ready(function () {
             }
         });
     };
+    // send button or field entered
     $('#testSub').click(send);
     $('#testKey, #testVal, #testPwd').on('keyup', function (e) {
         if (e.which == 13 || e.keyCode == 13)
             send();
     });
     $('#testClr').click(function () {
+        // AJAX request for clearing database
         $.ajax({
             url: window.phpServer,
             method: 'POST',
@@ -44,7 +46,8 @@ $(document).ready(function () {
     });
     // set PocketJS events
     var snapshot = '';
-    Pocket.bind('update', function (db) {
+    var pocket = Pocket();
+    pocket.bind('update', function (db) {
         if (db != snapshot) {
             snapshot = db;
             db = JSON.parse(snapshot);
@@ -62,16 +65,18 @@ $(document).ready(function () {
         if ((typeof db === 'string' && typeof snapshot === 'string') &&
             (db.trim() == '' || db.trim() == '{}' || db.trim() == '{ }') ||
             (snapshot.trim() == '' || snapshot.trim() == '{}' || snapshot.trim() == '{ }')
-        ) $('#table table').html("<tr class = 'darker'><th>No data</th></tr>");
+        ) $('#table table').html("<tr class = 'darker'><th>No Data</th></tr>");
     });
-    Pocket.onClose(function () {
-        $('#table table').html("<tr class = 'darker'><th>Connection closed/unavailable</th></tr>");
-        ;
+    pocket.onOpen(function () {
+        $('#table table').html("<tr class = 'darker'><th>Connected</th></tr>");
     });
-    Pocket.connect(pocketServer.domain, pocketServer.port, pocketServer.page);
+    pocket.onClose(function () {
+        $('#table table').html("<tr class = 'darker'><th>Disconnected</th></tr>");
+    });
+    pocket.connect(pocketServer.domain, pocketServer.port, pocketServer.page);
     // keep server alive
     setInterval(function () {
-        if (Pocket.online())
-            Pocket.send('update');
+        if (pocket.online())
+            pocket.send('update');
     }, 500);
 });

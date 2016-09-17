@@ -1,5 +1,5 @@
-var Pocket = (function () {
-    //private data
+var Pocket = function () {
+    // data
     var ws;
     var ol = false;
     var id = 0;
@@ -12,19 +12,9 @@ var Pocket = (function () {
     };
     var on = { };
 
-    //public data
-    var callArr = function (n, a) {
-        if (n in on) on[n].apply(on[n], a);
-        else console.log("[ERROR] event '" + n + "' does not exist");
-    };
-    var call = function (n) {
-        if (n in on) {
-            var args = [].slice.apply(arguments).slice(1);
-            if (args.length > 0) on[n].apply(on[n], args);
-            else on[n]();
-        } else console.log("[ERROR] event '" + n + "' does not exist");
-    };
-    var data = {
+    // object
+    var pocket;
+    pocket = {
         connect: function (domain, port, server) {
             var target = 'ws://' + domain + ':' + port + '/' + server;
             target = 'ws://' + domain + ':' + port.toString() + '/';
@@ -49,8 +39,8 @@ var Pocket = (function () {
             ws.onmessage = function (e) {
                 var data = JSON.parse(e.data);
                 if (ol) {
-                    if (data.args == null) call(data.call);
-                    else callArr(data.call, data.args);
+                    if (data.args == null) pocket.call(data.call);
+                    else pocket.callArr(data.call, data.args);
                 } else {
                     id = data.id;
                     address = data.address;
@@ -83,8 +73,17 @@ var Pocket = (function () {
             if (Object.prototype.toString.call(f) == '[object Function]') on[n] = f;
             else console.log('[ERROR] bind() requires parameter 2 to be a function');
         },
-        call: call,
-        callArr: callArr,
+        call: function (n) {
+            if (n in on) {
+                var args = [].slice.apply(arguments).slice(1);
+                if (args.length > 0) on[n].apply(on[n], args);
+                else on[n]();
+            } else console.log("[ERROR] event '" + n + "' does not exist");
+        },
+        callArr: function (n, a) {
+            if (n in on) on[n].apply(on[n], a);
+            else console.log("[ERROR] event '" + n + "' does not exist");
+        },
         onOpen: function () {
             var args = [].slice.apply(arguments);
             if (args.length > 0) {
@@ -114,5 +113,5 @@ var Pocket = (function () {
         getAddress: function () { return address; },
         getPort: function () { return port; }
     };
-    return data;
-})();
+    return pocket;
+};

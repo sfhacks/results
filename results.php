@@ -2,7 +2,14 @@
 
 require('pocket.php');
 
-$ip = isset($argv[3]) && is_string($argv[3]) && trim($argv[3]) != '' ? $argv[3] : '127.0.0.1';
+$ip = (
+        isset($argv[3]) &&
+        is_string($argv[3]) &&
+        trim($argv[3]) != '')
+    )
+    ? $argv[3]
+    : '127.0.0.1'
+;
 $pocket = new Pocket($ip, 7998, 10);
 $snapshot = '';
 

@@ -45,7 +45,7 @@ if (isset($_POST['password'])) {
         <br/>
         <div id = 'table'>
             <table>
-                <tr class = 'darker'><th>No data</th></tr>
+                <tr class = 'darker'><th>Connecting</th></tr>
             </table>
         </div>
         <br/><br/>
