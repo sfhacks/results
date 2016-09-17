@@ -23,7 +23,8 @@
     border-collapse: collapse;
     opacity: 0;
     transition: opacity 0.2s ease;
-    width: 280px;
+    min-width: 280px;
+    max-width: 350px;
 }
 #table table td, th {
     padding: 11px;
