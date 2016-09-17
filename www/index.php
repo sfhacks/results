@@ -28,7 +28,7 @@ if (isset($_POST['password'])) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>sfhacks live answers</title>
+    <title>sfhacks live results</title>
     <link rel = 'icon' href = 'favicon.png'/>
     <link rel = 'stylesheet' type = 'text/css' href = 'style.css'/>
     <script type = 'text/javascript' src = 'https://code.jquery.com/jquery-3.1.0.min.js' integrity = 'sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=' crossorigin = 'anonymous'></script>
@@ -39,7 +39,7 @@ if (isset($_POST['password'])) {
 <body>
     <div id = 'main'>
         <img src = 'favicon.png'/>
-        <h1>sfhacks live answers</h1>
+        <h1>sfhacks live results</h1>
         <br/>
         <div id = 'table'>
             <table></table>
