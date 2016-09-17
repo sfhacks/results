@@ -9,7 +9,7 @@ Send an HTTP POST request to [results.sfhacks.club](http://results.sfhacks.club)
 ## Requests (examples)
 Bash cURL:
 ```bash
-curl -X 'POST' -d "key=john&value=a45d" http://results.sfhacks.club
+curl -X 'POST' -d "key=Joe&value=a45d&password=sfhacks" http://results.sfhacks.club
 ```  
 &nbsp;  
 jQuery AJAX:
@@ -18,8 +18,9 @@ $.ajax({
     url: 'http://results.sfhacks.club',
     method: 'POST',
     data: {
-        key: 'john',
-        value: 'a45d'
+        key: 'Joe',
+        value: 'a45d',
+        password: 'sfhacks'
     },
     dataType: 'text',
     success: function (data) {
@@ -28,7 +29,7 @@ $.ajax({
 });
 ```
 &nbsp;  
-Pure Javascript:
+Pure JS AJAX:
 ```javascript
 var xhr = new XMLHttpRequest();
 xhr.onload = function () {
@@ -37,8 +38,9 @@ xhr.onload = function () {
 xhr.open('POST', 'http://results.sfhacks.club', true);
 request.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 request.send({
-    key: 'john',
-    value: 'a45d'
+    key: 'Joe',
+    value: 'a45d',
+    password: 'sfhacks'
 });
 ```
 &nbsp;  

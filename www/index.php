@@ -4,10 +4,10 @@ $cli = true;
 require('../pocket.php');
 $db = '../db.json';
 
-$password = 'jeanghantous';
+$password = 'sfhacks';
 if (isset($_POST['password'])) {
-    if ($_POST['password'] === md5($password)) {
-        if (isset($_POST['key']) && is_string($_POST['key'])) {
+    if (isset($_POST['key']) && is_string($_POST['key'])) {
+        if ($_POST['password'] === $password) {
             if (trim($_POST['key']) == '') die('No Blank Keys');
             $snapshot = json_decode(file_get_contents($db), true);
             if ((!isset($_POST['value']) || !is_string($_POST['value']) || trim($_POST['value']) == ''))
@@ -17,11 +17,13 @@ if (isset($_POST['password'])) {
             if (trim($json) == '' || $json == '[]') $json = '{}';
             if (file_put_contents($db, $json) === false) die('Failure to Update');
             else die('Database Updated');
-        } elseif (isset($_POST['clear']) && $_POST['clear']) {
+        } else die('Invalid Password');
+    } elseif (isset($_POST['clear']) && $_POST['clear']) {
+        if ($_POST['password'] === md5($password)) {
             if (file_put_contents($db, "{}") === false) die('Failure to Clear');
             else die ('Database Cleared');
-        }
-    } else die ('Invalid Password');
+        } else die('Invalid Password');
+    }
 }
 
 ?>
