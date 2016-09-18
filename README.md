@@ -60,7 +60,7 @@ Four main components of the results application:
     * client: page seen on [http://results.sfhacks.club](http://results.sfhacks.club)
         * displays table based on database (styled by `style.css`)
         * uses `app.js` to send and receive updates
-  4. `app.js` powers web client for the HTTP and pocketjs servers
+ 4. `app.js` powers web client for the HTTP and pocketjs servers
     * uses jQuery AJAX to send data to `index.php`
         * password for setting keys is `sfhacks`
         * password for clearing database is a secret!
