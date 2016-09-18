@@ -11,7 +11,7 @@ Send an HTTP POST request to [results.sfhacks.club](http://results.sfhacks.club)
  * value=*YourAnswer*
  * password=sfhacks
 
-## Sumitting Answers
+## Submitting Answers
 Bash cURL:
 ```bash
 curl -X 'POST' -d "key=Joe&value=a45d&password=sfhacks" http://results.sfhacks.club
