@@ -1,5 +1,14 @@
 <?php
 
+/*
+  pocketjs v1.0
+  [http://anuv.me/pocketjs]
+  File: pocket.php (pocketjs server)
+  Source: [https://github.com/anuvgupta/pocketjs]
+  License: MIT [https://github.com/anuvgupta/pocketjs/blob/master/LICENSE.md]
+  Copyright: (c) 2016 Anuv Gupta
+*/
+
 if (@$argv[2] == 'web') { //if library is included from web
     $cli = 2; //set cli to 2 to prevent bash commands
     $eol = '<br/>'; //set eol to line break for html
