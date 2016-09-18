@@ -3,7 +3,7 @@ Web interface for collecting results and answers from students
 &nbsp;  
 Libraries Used:  
 &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;[jQuery](https://jquery.com/) - v3.1.0  
-&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;[PocketJS](http://anuv.me/pocketjs) - v1.0 (by [@anuvgupta](https://github.com/anuvgupta))
+&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;[PocketJS](http://anuv.me/pocketjs) - v1.0 (by [@anuvgupta](#x))
 &nbsp;  
 ## How to submit answers
 Send an HTTP POST request to [results.sfhacks.club](http://results.sfhacks.club) with the following data:
@@ -11,7 +11,7 @@ Send an HTTP POST request to [results.sfhacks.club](http://results.sfhacks.club)
  * value=*YourAnswer*
  * password=sfhacks
 
-## Requests (examples)
+## x
 Bash cURL:
 ```bash
 curl -X 'POST' -d "key=Joe&value=a45d&password=sfhacks" http://results.sfhacks.club
