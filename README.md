@@ -1,23 +1,5 @@
 # sfhacks results
 Web interface for collecting results and answers from students  
- * `db.json` database of keys/values
- * `results.php` pocketjs socket server
-   * uses `pocket.php` to create socket server
-   * runs indefinitely on [ws://results.sfhacks.club:7998](http://results.sfhacks.club)
-   * checks `db.json` for changes when asked for updates by clients
-   * when changes found, pushes updated database to all open clients
- * `index.php` server for updating database/web client for server
-   * server: accepts HTTP POST requests as defined [here](#submitting-answers)
-   * client: page seen on [http://results.sfhacks.club](http://results.sfhacks.club)
-     * displays table based on database (styled by `style.css`)
-     * uses `app.js` to send and receive updates
-  * `app.js` communicator for AJAX and pocketjs servers
-    * uses jQuery AJAX to send data to `index.php`
-      * password for setting keys is `sfhacks`
-      * password for clearing database is a secret!
-     * uses pocketjs WebSocket client
-       * requests/receives changes in `db.json` from `results.php`
-
 &nbsp;  
 Libraries Used:  
 &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;[jQuery](https://jquery.com/) - v3.1.0  
@@ -62,4 +44,27 @@ xhr.open('POST', 'http://results.sfhacks.club', true);
 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
 xhr.send('key=Joe&value=a45d&password=sfhacks');
 ```
+&nbsp;  
+
+## Structure
+Four main components of the results application:
+ 1. `db.json` database of keys/values
+ 2. `results.php` pocketjs socket server
+    * uses `pocket.php` to create socket server
+    * runs indefinitely on [ws://results.sfhacks.club:7998](http://results.sfhacks.club)
+    * checks `db.json` for changes when asked for updates by clients
+    * when changes found, pushes updated database to all open clients
+ 3. `index.php` HTTP server for/web client
+    * server: accepts HTTP POST requests as defined [here](#submitting-answers)
+        * updates keys in database based on posted data
+    * client: page seen on [http://results.sfhacks.club](http://results.sfhacks.club)
+        * displays table based on database (styled by `style.css`)
+        * uses `app.js` to send and receive updates
+  4. `app.js` powers web client for the HTTP and pocketjs servers
+    * uses jQuery AJAX to send data to `index.php`
+        * password for setting keys is `sfhacks`
+        * password for clearing database is a secret!
+    * uses pocketjs WebSocket client
+        * requests/receives changes in `db.json` from `results.php`
+
 &nbsp;  
