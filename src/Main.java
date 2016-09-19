@@ -23,7 +23,7 @@ public class Main {
             while (it.hasNext()) {
                 String s = it.next();
                 String ans = jedis.get(s);
-                if(ans.equals("testing")) {
+                if(ans.equals("answer!")) {
                   ans = ans + " - CORRECT!!";
                 } else {
                   ans = ans + " - WRONG!";
