@@ -24,7 +24,7 @@ public class Main {
                 String s = it.next();
                 String ans = jedis.get(s);
                 if(ans.equals("answer!")) {
-                  ans = ans + " - CORRECT!!";
+                  ans = ans + " - CORRECT ANSWER!!";
                 } else {
                   ans = ans + " - WRONG!";
                 }
@@ -37,8 +37,6 @@ public class Main {
                 System.out.println(e.getMessage());
                 System.exit(0);
             }
-
-            System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
         }
 
     }
