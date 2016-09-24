@@ -54,7 +54,7 @@ Four main components of the results application:
     * runs indefinitely on [ws://results.sfhacks.club:7998](http://results.sfhacks.club)
     * checks `db.json` for changes when asked for updates by clients
     * when changes found, pushes updated database to all open clients
- 3. `index.php` HTTP server for/web client
+ 3. `index.php` HTTP server/web client
     * server: accepts HTTP POST requests as defined [here](#submitting-answers)
         * updates keys in database based on posted data
     * client: page seen on [http://results.sfhacks.club](http://results.sfhacks.club)
