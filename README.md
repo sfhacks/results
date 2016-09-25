@@ -7,8 +7,8 @@ Libraries Used:
 &nbsp;  
 ## Submitting Answers
 Send an HTTP POST request to [results.sfhacks.club](http://results.sfhacks.club) with the following data:
- * key=*YourName*
- * value=*YourAnswer*
+ * name=*YourName*
+ * answer=*YourAnswer*
  * password=sfhacks
 
 ### Request Examples
@@ -52,20 +52,26 @@ The admin password is an environment variable stored on [results.sfhacks.club](h
  * Deleting Database Entries
     * A parameter `number` (which specifies the number ID of the entry) must be provided
     * A parameter `password` must be the admin password
-    * Query Format: number=*entry_ID*&password=*admin_password*
+    * Query Format
+       * number=*entry_ID*
+       * password=*admin_password*
     * Example: `number=2&password=secret`
  * Setting the Correct Answer
     * A parameter `correct` (which specifies the new correct answer) must be provided
         * If `correct` is set to `__N/A`, then the **Correct** column on [results.sfhacks.club](http://results.sfhacks.club) is set to N/A
             * This feature can be used to "hide" the correct answer if there is no particular correct answer, or if it should not be shown yet
     * A parameter `password` must be the admin password
-    * Query Format: correct=*new_answer*&password=*admin_password*
+    * Query Format
+       * correct=*new_answer*
+       * password=*admin_password*
     * Example: `correct=a45d&password=secret`
  * Clearing the Database
     * A parameter `clear` must be provided and set to `true`
     * A parameter `password` must be the admin password
-    * Query Format: correct=true&password=*admin_password*
-    * Example: `correct=true&password=secret`
+    * Query Format
+      * clear=true
+      * password=*admin_password*
+    * Example: `clear=true&password=secret`
 
 &nbsp;  
 
