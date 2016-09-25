@@ -34,8 +34,14 @@
 #table tr.darker {
     background-color: #F8F8F8;
 }
+#table td.num {
+    min-width: 35px;
+}
 
-#form input {
+.form {
+    display: block;
+}
+.form input {
     border: 1px solid #CCC;
     border-radius: 3px;
     outline: none;
@@ -45,21 +51,38 @@
     width: 140px;
     height: 25px;
 }
-#form input:focus {
+.form input:focus {
     outline: 1px solid #E9E9E9;
 }
-#form button {
+.form button {
     padding: 8px;
     font-size: 14px;
     border: 1px solid #CCC;
     border-radius: 3px;
     background-color: #F6F6F6;
     cursor: pointer;
-    width: 79px;
+    width: 162px;
     outline: none;
     transition: background-color 0.2s ease;
-    margin-bottom: 8px;
 }
-#form button:hover {
+.form button:hover {
     background-color: #ECECEC;
+}
+.form .response {
+    display: block;
+    margin-top: 4px;
+}
+.form .half {
+    display: inline-block;
+    margin: 0 auto;
+}
+
+.form #adminPwd {
+    margin: 3px 0 -2px 0;
+    width: 315px;
+}
+
+.form #adminClr {
+    margin-top: -1px;
+    width: 337px;
 }

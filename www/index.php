@@ -3,27 +3,63 @@
 $cli = true;
 require('../pocket.php');
 $db = '../db.json';
+session_start();
 
 $password = 'sfhacks';
+$answer = isset($_SESSION['correct']) ? $_SESSION['correct'] : 'true';
 if (isset($_POST['password'])) {
-    if (isset($_POST['key']) && is_string($_POST['key'])) {
-        if ($_POST['password'] === $password) {
-            if (trim($_POST['key']) == '') die('No Blank Keys');
+    if ($_POST['password'] === $password) {
+        if (isset($_POST['name']) && is_string($_POST['name'])) {
+            if (trim($_POST['name']) == '')
+                die('Name cannot be blank');
             $snapshot = json_decode(file_get_contents($db), true);
-            if ((!isset($_POST['value']) || !is_string($_POST['value']) || trim($_POST['value']) == ''))
-                unset($snapshot[$_POST['key']]);
-            else $snapshot[$_POST['key']] = $_POST['value'];
+            array_push($snapshot, [
+                'name' => $_POST['name'],
+                'answer' => $_POST['answer'],
+                'correct' => (($_POST['answer'] == $answer) ? 'true' : 'false')
+            ]);
             $json = json_encode($snapshot);
-            if (trim($json) == '' || $json == '[]') $json = '{}';
-            if (file_put_contents($db, $json) === false) die('Failure to Update');
+            if (trim($json) == '' || trim($json) == '{}') $json = '[]';
+            if (file_put_contents($db, $json) === false)
+                die('Failure to Update');
             else die('Database Updated');
-        } else die('Invalid Password');
-    } elseif (isset($_POST['clear']) && $_POST['clear']) {
-        if ($_POST['password'] === md5($password)) {
-            if (file_put_contents($db, "{}") === false) die('Failure to Clear');
+        } else die('Invalid Request');
+    } elseif ($_POST['password'] === md5($password)) {
+        if (isset($_POST['clear']) && $_POST['clear']) {
+            if (file_put_contents($db, "[]") === false)
+                die('Failure to Clear');
             else die ('Database Cleared');
-        } else die('Invalid Password');
-    }
+        } elseif (isset($_POST['number'])) {
+            if (trim($_POST['number']) == '')
+                die('Number to delete cannot be blank');
+            $snapshot = json_decode(file_get_contents($db), true);
+            if (isset($snapshot[$_POST['number']]))
+                unset($snapshot[$_POST['number']]);
+            else die('Invalid Number');
+            $json = json_encode($snapshot);
+            if (trim($json) == '' || trim($json) == '{}') $json = '[]';
+            if (file_put_contents($db, $json) === false)
+                die('Failure to Update');
+            else die('Database Updated');
+        } elseif (isset($_POST['correct'])) {
+            if (trim($_POST['correct']) == '')
+                die('New correct answer cannot be blank');
+            $_SESSION['correct'] = $_POST['correct'];
+            if ($_POST['correct'] != $_SESSION['correct'])
+                die('Failure to update answer');
+            $snapshot = json_decode(file_get_contents($db), true);
+            foreach ($snapshot as $key => $entry) {
+                if ($snapshot[$key]['answer'] != $_POST['correct'])
+                    $snapshot[$key]['correct'] = 'false';
+                else $snapshot[$key]['correct'] = 'true';
+            }
+            $json = json_encode($snapshot);
+            if (trim($json) == '' || trim($json) == '{}') $json = '[]';
+            if (file_put_contents($db, $json) === false)
+                die('Failure to Update');
+            die('Correct answer updated');
+        } else die('Invalid Request');
+    } else die('Invalid Password');
 }
 
 ?>
@@ -46,17 +82,35 @@ if (isset($_POST['password'])) {
         <div id = 'table'>
             <table>
                 <tr class = 'darker'><th>Connecting</th></tr>
+                <noscript><tr><th><span style = 'color: #BB3333'>THIS SITE REQUIRES JAVASCRIPT</span></th></tr></noscript>
             </table>
         </div>
         <br/><br/>
-        <div id = 'form'>
-            <b>Test Data</b><br/>
-            <input placeholder = 'Key' type = 'text' id = 'testKey'/><br/>
-            <input placeholder = 'Value' type = 'text' id = 'testVal'/><br/>
+        <div class = 'form' id = 'test'>
+            <b>Data</b><br/>
+            <input placeholder = 'Name' type = 'text' id = 'testKey'/><br/>
+            <input placeholder = 'Answer' type = 'text' id = 'testVal'/><br/>
             <input placeholder = 'Password' type = 'password' id = 'testPwd'/><br/>
-            <button id = 'testClr'>Clear</button><button id = 'testSub'>Send</button><br/>
-            <span id = 'testData'></span>
+            <button id = 'testSub'>Send Data</button>
+            <span class = 'response' id = 'testData'></span>
         </div>
+        <div class = 'form' id = 'admin'>
+            <br/><b>Admin</b><br/>
+            <input placeholder = 'Password' type = 'password' id = 'adminPwd'/>
+            <div>
+                <div class = 'half'>
+                    <input placeholder = 'Number' type = 'text' id = 'adminNum'/><br/>
+                    <button id = 'adminDel'>Delete Entry</button><br/>
+                </div>
+                <div class = 'half'>
+                    <input placeholder = 'Answer' type = 'text' id = 'adminCor'/><br/>
+                    <button id = 'adminAns'>Set Answer</button><br/>
+                </div>
+            </div>
+            <button id = 'adminClr'>Clear Database</button>
+            <span class = 'response' id = 'adminData'></span>
+        </div>
+        <br/>
     </div>
 </body>
 </html>

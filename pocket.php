@@ -3,10 +3,10 @@
 /*
   pocketjs v1.0
   [http://anuv.me/pocketjs]
+  Copyright: (c) 2016 Anuv Gupta
   File: pocket.php (pocketjs server)
   Source: [https://github.com/anuvgupta/pocketjs]
   License: MIT [https://github.com/anuvgupta/pocketjs/blob/master/LICENSE.md]
-  Copyright: (c) 2016 Anuv Gupta
 */
 
 if (@$argv[2] == 'web') { //if library is included from web
@@ -138,7 +138,11 @@ class Pocket {
                     //recieve data from client
                     while (@socket_recv($this->c[$i], $masked_data, 1024, 0) >= 1) { //if client sends new data (0 bytes = disconnected, 1 byte = connected, >1 bytes = new data sent to server)
                         //$data = json_decode(escapeshellcmd($this->unmask($masked_data)), true);
-                        $data = json_decode($this->unmask($masked_data), true);
+                        $textData = $this->unmask($masked_data);
+                        // trim extra bytes
+                        $textData = substr($textData, 0, strrpos($textData, '}') + 1);
+                        // echo $textData . $eol;
+                        $data = json_decode($textData, true);
                         if (isset($data['command'])) {
                             if ($data['command'] == 'close') {
                                 $this->close($data['id']);
@@ -146,8 +150,8 @@ class Pocket {
                             }
                             //elseif ($data['command'] == 'alive') ;
                         } elseif (!isset($data['call'])) {
-                            $this->close($i);
                             echo "[SERVER] client[$i] kicked for: sending illegal data: no event specified" . $eol;
+                            $this->close($i);
                         } elseif (isset($this->on[$data['call']])) {
                             if (isset($data['args'])) {
                                 array_push($data['args'], $i);
