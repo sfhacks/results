@@ -3,12 +3,13 @@
 $cli = true;
 require('../pocket.php');
 $db = '../db.json';
+$passwords = '../passwords.json';
 session_start();
 
-$password = 'sfhacks';
+$passwords = json_decode(file_get_contents($passwords), true);
 $answer = isset($_SESSION['correct']) ? $_SESSION['correct'] : 'true';
 if (isset($_POST['password'])) {
-    if ($_POST['password'] === $password) {
+    if ($_POST['password'] === $passwords['password']) {
         if (isset($_POST['name']) && is_string($_POST['name'])) {
             if (trim($_POST['name']) == '')
                 die('Name cannot be blank');
@@ -24,7 +25,7 @@ if (isset($_POST['password'])) {
                 die('Failure to Update');
             else die('Database Updated');
         } else die('Invalid Request');
-    } elseif ($_POST['password'] === md5($password)) {
+    } elseif ($_POST['password'] === $passwords['admin']) {
         if (isset($_POST['clear']) && $_POST['clear']) {
             if (file_put_contents($db, "[]") === false)
                 die('Failure to Clear');
@@ -49,7 +50,9 @@ if (isset($_POST['password'])) {
                 die('Failure to update answer');
             $snapshot = json_decode(file_get_contents($db), true);
             foreach ($snapshot as $key => $entry) {
-                if ($snapshot[$key]['answer'] != $_POST['correct'])
+                if ($_POST['correct'] == '__N/A')
+                    $snapshot[$key]['correct'] = '__N/A';
+                elseif ($snapshot[$key]['answer'] != $_POST['correct'])
                     $snapshot[$key]['correct'] = 'false';
                 else $snapshot[$key]['correct'] = 'true';
             }
@@ -96,17 +99,17 @@ if (isset($_POST['password'])) {
         </div>
         <div class = 'form' id = 'admin'>
             <br/><b>Admin</b><br/>
-            <input placeholder = 'Password' type = 'password' id = 'adminPwd'/>
             <div>
                 <div class = 'half'>
-                    <input placeholder = 'Number' type = 'text' id = 'adminNum'/><br/>
+                    <input placeholder = 'ID' type = 'text' id = 'adminNum'/><br/>
                     <button id = 'adminDel'>Delete Entry</button><br/>
                 </div>
                 <div class = 'half'>
-                    <input placeholder = 'Answer' type = 'text' id = 'adminCor'/><br/>
+                    <input placeholder = 'Answer' type = 'password' id = 'adminCor'/><br/>
                     <button id = 'adminAns'>Set Answer</button><br/>
                 </div>
             </div>
+            <input placeholder = 'Password' type = 'password' id = 'adminPwd'/>
             <button id = 'adminClr'>Clear Database</button>
             <span class = 'response' id = 'adminData'></span>
         </div>

@@ -78,8 +78,9 @@
 }
 
 .form #adminPwd {
-    margin: 3px 0 -2px 0;
+    margin: 3px auto 5px auto;
     width: 315px;
+    display: block;
 }
 
 .form #adminClr {

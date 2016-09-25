@@ -50,7 +50,7 @@ $(document).ready(function () {
             method: 'POST',
             async: true,
             data: {
-                number: document.getElementById('adminNum').value,
+                number: parseInt(document.getElementById('adminNum').value) - 1,
                 password: document.getElementById('adminPwd').value
             },
             dataType: 'text',
@@ -110,7 +110,10 @@ $(document).ready(function () {
                 answer.appendChild(document.createTextNode(item.answer));
                 row.appendChild(answer);
                 var correct = document.createElement('td');
-                correct.appendChild(document.createTextNode((item.correct == 'true') ? 'YES' : 'NO'));
+                var correctAnswer = 'NO';
+                if (item.correct == '__N/A') correctAnswer = 'N/A';
+                else if (item.correct == 'true') correctAnswer = 'YES';
+                correct.appendChild(document.createTextNode(correctAnswer));
                 row.appendChild(correct);
                 $('#table table')[0].appendChild(row);
             }
