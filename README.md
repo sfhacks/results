@@ -47,7 +47,7 @@ xhr.send('name=Joe&answer=a45d&password=sfhacks');
 &nbsp;  
 
 ## Admin Actions
-The admin password is an environment variable stored on [results.sfhacks.club](http://results.sfhacks.club).
+The admin password is an environment variable stored on [results.sfhacks.club](http://results.sfhacks.club)  
 &nbsp;&nbsp; Email [me@anuv.me](mailto:me@anuv.me) for access to the password
  * Deleting Database Entries
     * A parameter `number` (which specifies the number ID of the entry) must be provided, as well as the admin password
