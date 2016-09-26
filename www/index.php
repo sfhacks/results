@@ -17,7 +17,7 @@ if (isset($_POST['password'])) {
             array_push($snapshot, [
                 'name' => $_POST['name'],
                 'answer' => $_POST['answer'],
-                'correct' => (($_POST['answer'] == $answer) ? 'true' : 'false')
+                'correct' => (($_POST['answer'] == $answer) ? 'true' : (($answer == '__N/A') ? '__N/A' : 'false'))
             ]);
             $json = json_encode($snapshot);
             if (trim($json) == '' || trim($json) == '{}') $json = '[]';
@@ -90,7 +90,7 @@ if (isset($_POST['password'])) {
         </div>
         <br/><br/>
         <div class = 'form' id = 'test'>
-            <b>Data</b><br/>
+            <b>Test Data</b><br/>
             <input placeholder = 'Name' type = 'text' id = 'testKey'/><br/>
             <input placeholder = 'Answer' type = 'text' id = 'testVal'/><br/>
             <input placeholder = 'Password' type = 'password' id = 'testPwd'/><br/>
@@ -98,7 +98,7 @@ if (isset($_POST['password'])) {
             <span class = 'response' id = 'testData'></span>
         </div>
         <div class = 'form' id = 'admin'>
-            <br/><b>Admin</b><br/>
+            <br/><b>Admin Panel</b><br/>
             <div>
                 <div class = 'half'>
                     <input placeholder = 'ID' type = 'text' id = 'adminNum'/><br/>
