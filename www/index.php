@@ -14,10 +14,13 @@ if (isset($_POST['password'])) {
             if (trim($_POST['name']) == '')
                 die('Name cannot be blank');
             $snapshot = json_decode(file_get_contents($db), true);
+            $isCorrect = 'false';
+            if ($answer == '__N/A') $isCorrect = '__N/A';
+            elseif ($_POST['answer'] == $answer) $isCorrect = 'true';
             array_push($snapshot, [
                 'name' => $_POST['name'],
                 'answer' => $_POST['answer'],
-                'correct' => (($_POST['answer'] == $answer) ? 'true' : (($answer == '__N/A') ? '__N/A' : 'false'))
+                'correct' => $isCorrect
             ]);
             $json = json_encode($snapshot);
             if (trim($json) == '' || trim($json) == '{}') $json = '[]';
