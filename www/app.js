@@ -131,8 +131,10 @@ $(document).ready(function () {
     });
     pocket.connect(pocketServer.domain, pocketServer.port, pocketServer.page);
     // keep server alive
+    /* (this section is commented out because pocketjs's non-blocking functionality keeps the server alive)
     setInterval(function () {
-        if (pocket.online())
+        if (pocket.online()) ;
             pocket.send('update');
     }, 450);
+    */
 });

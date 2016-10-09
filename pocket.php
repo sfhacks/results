@@ -33,13 +33,15 @@ class Pocket {
     protected $ev; //reserved event listeners
     protected $on; //custom event listeners
     protected $v; //verbose run
+    protected $bt; //blocking timeout
     //constructor method called when new Pocket constructed
-    public function __construct($d, $p, $mc, $v = null) {
+    public function __construct($d, $p, $mc, $bt, $v = null) {
         global $eol, $cli;
-        $this->d = $d ?: 'localhost';
-        $this->p = $p ?: 30000;
+        $this->d = isset($d) ? $d : 'localhost';
+        $this->p = isset($p) ? $p : 30000;
         $this->c = array();
-        $this->mc = $mc ?: 25;
+        $this->mc = isset($mc) ? $mc : 25;
+        $this->bt = $bt;
         $this->ev = array(
             'open' => function ($id) { },
             'run' => function () { },
@@ -76,18 +78,17 @@ class Pocket {
         }
         while (true) { //start server
             $read = array(); //array of sockets to be read
-            $read[0] = $this->s; //first socket to be read = master socket
-            //add existing (online) clients to read array
+            $read[0] = $this->s; //first socket to be read = master socket (to check for new clients)
+            //add existing (online) clients to read array (to check for new data)
             for ($i = 0; $i < $this->mc; $i++) {
                 if (isset($this->c[$i])) $read[$i + 1] = $this->c[$i];
             }
-            //select sockets in read array to be watched for status changes
-            if (@socket_select($read , $write , $except , null) === false) //pass in read, null write and except, null timeout (to block (watch for status change) infinitely)
-                die ('[ERROR] socket_select($read , $write , $except , null): fail - [' . socket_last_error() . '] ' . socket_strerror(socket_last_error()) . $eol);
-            //FUNCTIONALITY OF socket_select() IN QUESTION: does it remove all socket elements in $read, and later add them back when status change occurs?
+            //select sockets in read array to be watched for status changes (read array will be modified to contain updated sockets)
+            if (@socket_select($read, $write, $except, $this->bt) === false) //pass in read, null write and except, null timeout (to block (pause server to watch for status change) infinitely/indefinitely), or whatever user selected timeout
+                echo '[ERROR] socket_select($read , $write , $except , null): fail - [' . socket_last_error() . '] ' . socket_strerror(socket_last_error()) . $eol;
 
             //check if new client is connecting
-            if (in_array($this->s, $read)) { //if master socket is in read array, master socket's status has changed, thus a client is connecting
+            if (in_array($this->s, $read)) { //if master socket is in modified read array, master socket's status has changed, thus a client is connecting
                 for ($i = 0; $i < $this->mc; $i++) { //loop through array of clients
                     if (@$this->c[$i] == null) { //if there is space available for a new connection
                         echo $eol;
@@ -96,7 +97,7 @@ class Pocket {
                         //display connecting client's details
                         if (socket_getpeername($this->c[$i], $addr, $port)) echo "[SERVER] client[$i] $addr : $port connecting" . $eol;
                         //accept client socket handshake headers
-                        $header = socket_read($this->c[$i], 1024); //read data from new client socket: contains handshake headers
+                        $header = @socket_read($this->c[$i], 1024); //read data from new client socket: contains handshake headers
                         echo '[SERVER] headers recieved';
                         $headers = array(); //init headers array
                         $lines = preg_split("/\r\n/", $header); //add each line of header to array
@@ -106,7 +107,7 @@ class Pocket {
                         }
                         echo ' | ';
                         //generate and send back server socket handshake headers to client socket
-                        $accept = base64_encode(pack('H*', sha1($headers['Sec-WebSocket-Key'] . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
+                        $accept = base64_encode(pack('H*', sha1(@$headers['Sec-WebSocket-Key'] . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
                         $upgrade  = "HTTP/1.1 101 Web Socket Protocol Handshake\r\n" .
                             "Upgrade: websocket\r\n" .
                             "Connection: Upgrade\r\n" .
@@ -114,7 +115,7 @@ class Pocket {
                             "WebSocket-Location: ws://$this->d:$this->p/server.php\r\n".
                             "Sec-WebSocket-Accept:$accept\r\n\r\n";
                         if (socket_write($this->c[$i], $upgrade, strlen($upgrade)) === false)
-                            die ('socket_write: fail - [' . socket_last_error() . '] ' . socket_strerror(socket_last_error()) . $eol);
+                            echo 'socket_write: fail - [' . socket_last_error() . '] ' . socket_strerror(socket_last_error()) . $eol;
                         echo 'headers sent' . $eol;
                         //display connection details if connection successful
                         if (socket_getpeername($this->c[$i], $addr, $port)) {
@@ -137,11 +138,9 @@ class Pocket {
                 if (in_array(@$this->c[$i] , $read)) { //if client socket is defined and is in read array, its status has changed and it is sending data
                     //recieve data from client
                     while (@socket_recv($this->c[$i], $masked_data, 1024, 0) >= 1) { //if client sends new data (0 bytes = disconnected, 1 byte = connected, >1 bytes = new data sent to server)
-                        //$data = json_decode(escapeshellcmd($this->unmask($masked_data)), true);
                         $textData = $this->unmask($masked_data);
                         // trim extra bytes
                         $textData = substr($textData, 0, strrpos($textData, '}') + 1);
-                        // echo $textData . $eol;
                         $data = json_decode($textData, true);
                         if (isset($data['command'])) {
                             if ($data['command'] == 'close') {

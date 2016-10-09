@@ -3,7 +3,7 @@
 require('pocket.php');
 
 $ip = isset($argv[3]) && is_string($argv[3]) && trim($argv[3]) != '' ? $argv[3] : '127.0.0.1';
-$pocket = new Pocket($ip, 7998, 10);
+$pocket = new Pocket($ip, 7998, 10, 1);
 $snapshot = '';
 
 $pocket->bind('update', function () {
@@ -19,6 +19,11 @@ $pocket->bind('update', function () {
     }
     system('clear');
     print_r(json_decode($db));
+});
+
+$pocket->onRun(function () {
+    global $pocket;
+    $pocket->call('update');
 });
 
 $pocket->open();
