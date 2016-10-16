@@ -1,14 +1,9 @@
-var pocketServer = {
-    domain: document.domain,
-    port: 7998,
-    page: 'results.php'
-};
 $(document).ready(function () {
     // set data DOM events
     $('#testSub').click(function () {
         // AJAX request for setting keys in database
         $.ajax({
-            url: window.phpServer,
+            url: window.servers.rest,
             method: 'POST',
             async: true,
             data: {
@@ -30,7 +25,7 @@ $(document).ready(function () {
     $('#adminClr').click(function () {
         // AJAX request for clearing database
         $.ajax({
-            url: window.phpServer,
+            url: window.servers.rest,
             method: 'POST',
             async: true,
             data: {
@@ -46,7 +41,7 @@ $(document).ready(function () {
     $('#adminDel').click(function () {
         // AJAX request for deleting keys in database
         $.ajax({
-            url: window.phpServer,
+            url: window.servers.rest,
             method: 'POST',
             async: true,
             data: {
@@ -66,7 +61,7 @@ $(document).ready(function () {
     $('#adminAns').click(function () {
         // AJAX request for setting correct answer
         $.ajax({
-            url: window.phpServer,
+            url: window.servers.rest,
             method: 'POST',
             async: true,
             data: {
@@ -129,7 +124,8 @@ $(document).ready(function () {
     pocket.onClose(function () {
         $('#table table').html("<tr class = 'darker'><th>Disconnected</th></tr>");
     });
-    pocket.connect(pocketServer.domain, pocketServer.port, pocketServer.page);
+    pocket.connect(window.servers.pocket.domain, window.servers.pocket.port, window.servers.pocket.page);
+
     // keep server alive
     /* (this section is commented out because pocketjs's non-blocking functionality keeps the server alive)
     setInterval(function () {

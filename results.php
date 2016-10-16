@@ -6,6 +6,7 @@ $ip = isset($argv[3]) && is_string($argv[3]) && trim($argv[3]) != '' ? $argv[3] 
 $pocket = new Pocket($ip, 7998, 10, 1);
 $snapshot = '';
 
+// event for pushing updates to clients
 $pocket->bind('update', function () {
     global $pocket;
     // get database
@@ -14,13 +15,15 @@ $pocket->bind('update', function () {
     if (trim($db) == '') return;
     // check for updates
     if ($db != $snapshot) {
+        // push updates to all
         $pocket->sendAll('update', $db);
         $snapshot = $db;
+        system('clear');
+        print_r(json_decode($db));
     }
-    system('clear');
-    print_r(json_decode($db));
 });
 
+// update clients indefinitely
 $pocket->onRun(function () {
     global $pocket;
     $pocket->call('update');
