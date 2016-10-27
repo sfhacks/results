@@ -2,11 +2,10 @@
 
 $cli = true;
 $db = '../db.json';
-$passwords = '../passwords.json';
-session_start();
+$pwds = '../passwords.json';
 
-$passwords = json_decode(file_get_contents($passwords), true);
-$answer = isset($_SESSION['correct']) ? $_SESSION['correct'] : 'true';
+$passwords = json_decode(file_get_contents($pwds), true);
+$answer = isset($passwords['correct']) ? $passwords['correct'] : 'true';
 if (isset($_POST['password'])) {
     if ($_POST['password'] === $passwords['password']) {
         if (isset($_POST['name']) && is_string($_POST['name'])) {
@@ -15,7 +14,7 @@ if (isset($_POST['password'])) {
             $snapshot = json_decode(file_get_contents($db), true);
             $isCorrect = 'false';
             if ($answer == '__N/A') $isCorrect = '__N/A';
-            elseif ($_POST['answer'] == $answer) $isCorrect = 'true';
+            elseif (strval($_POST['answer']) == strval($answer)) $isCorrect = 'true';
             array_push($snapshot, [
                 'name' => $_POST['name'],
                 'answer' => $_POST['answer'],
@@ -47,14 +46,14 @@ if (isset($_POST['password'])) {
         } elseif (isset($_POST['correct'])) {
             if (trim($_POST['correct']) == '')
                 die('New correct answer cannot be blank');
-            $_SESSION['correct'] = $_POST['correct'];
-            if ($_POST['correct'] != $_SESSION['correct'])
+            $passwords['correct'] = $_POST['correct'];
+            if ($passwords['correct'] != $_POST['correct'] || file_put_contents($pwds, json_encode($passwords, JSON_PRETTY_PRINT)) === false)
                 die('Failure to update answer');
             $snapshot = json_decode(file_get_contents($db), true);
             foreach ($snapshot as $key => $entry) {
                 if ($_POST['correct'] == '__N/A')
                     $snapshot[$key]['correct'] = '__N/A';
-                elseif ($snapshot[$key]['answer'] != $_POST['correct'])
+                elseif (strval($snapshot[$key]['answer']) != strval($_POST['correct']))
                     $snapshot[$key]['correct'] = 'false';
                 else $snapshot[$key]['correct'] = 'true';
             }
