@@ -78,14 +78,15 @@ The admin password is an environment variable stored on [results.sfhacks.club](h
 ## Structure
 Four main components of the results application:
  1. `db.json` database of names/answers
- 2. `results.php` pocketjs socket server
-    * uses `pocket.php` to create socket server
+ 2. `results.php` pocketjs WebSocket server
+    * uses `pocket.php` to create WebSocket server
     * runs indefinitely on [ws://results.sfhacks.club:7998](http://results.sfhacks.club)
-    * checks `db.json` for changes when asked for updates by clients
+    * checks `db.json` repeatedly (every second) for changes
     * when changes found, pushes updated database to all open clients
  3. `index.php` HTTP server/web client
     * server: accepts HTTP POST requests as defined [here](#submitting-answers)
         * updates keys in database based on posted data
+        * logic is defined in `api.php`
     * client: page seen on [http://results.sfhacks.club](http://results.sfhacks.club)
         * displays table based on database (styled by `style.css`)
         * uses `app.js` to send and receive updates
@@ -94,6 +95,6 @@ Four main components of the results application:
         * password for sending answers is `sfhacks`
         * password for admin actions is a secret!
     * uses pocketjs WebSocket client
-        * requests/receives changes in `db.json` from `results.php`
+        * receives changes in `db.json` from `results.php`
 
 &nbsp;  
