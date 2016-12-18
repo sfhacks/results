@@ -1,7 +1,7 @@
 <?php
 
 /*
-  pocketjs v1.0
+  pocketjs v1.1
   [http://anuv.me/pocketjs]
   Copyright: (c) 2016 Anuv Gupta
   File: pocket.php (pocketjs server)
@@ -9,18 +9,10 @@
   License: MIT [https://github.com/anuvgupta/pocketjs/blob/master/LICENSE.md]
 */
 
-if (@$argv[2] == 'web') { //if library is included from web
-    $cli = 2; //set cli to 2 to prevent bash commands
-    $eol = '<br/>'; //set eol to line break for html
-    @ini_set('output_buffering', 'off'); //turn off output buffering
-    @ini_set('zlib.output_compression', false); //turn off output compression
-    while (@ob_end_flush()); //flush output buffer, again turn off output buffering
-    @ini_set('implicit_flush', true); //allow implicit flushing
-    @ob_implicit_flush(true); //implicitly flush buffers
-} elseif (@$argv[2] == 'nobash') $cli = 2; //if library is included with no bash
-if (!isset($cli)) $cli = php_sapi_name() == 'cli'; //if script does not have permission to be run from elsewhere, get cli status
-if (!$cli) header('Location: .'); //if script is not run from cli or is not allowed, redirect
-if (!isset($eol)) $eol = PHP_EOL; //if the eol string isn't defaulted, default to platform default
+if (!isset($cli)) $cli = php_sapi_name() == 'cli'; // if script does not have permission to be run from elsewhere, get cli status
+if (!$cli) header('Location: .'); // if script is not run from cli or is not allowed, redirect
+if ($cli == true) $cli = 2; // prevent bash escape sequences, just in case
+if (!isset($eol)) $eol = PHP_EOL; // if the eol string isn't defaulted, default to platform default
 
 class Pocket {
     //instance fields
@@ -123,7 +115,7 @@ class Pocket {
                             //send client's data to client
                             $this->data = $this->mask(json_encode(array('id' => $i, 'address' => $addr, 'port' => $port)));
                             socket_write($this->c[$i], $this->data, strlen($this->data));
-                            $this->onOpen($i);
+                            $this->onConn($i);
                         }
                         break;
                     }
@@ -138,10 +130,13 @@ class Pocket {
                 if (in_array(@$this->c[$i] , $read)) { //if client socket is defined and is in read array, its status has changed and it is sending data
                     //recieve data from client
                     while (@socket_recv($this->c[$i], $masked_data, 1024, 0) >= 1) { //if client sends new data (0 bytes = disconnected, 1 byte = connected, >1 bytes = new data sent to server)
-                        $textData = $this->unmask($masked_data);
-                        // trim extra bytes
+                        $encodedData = $this->unmask($masked_data);
+                        // decode and trim trailing bytes
+                        $beginningPos = strpos($encodedData, '~pocketjs~') + 10;
+                        $textData = substr($encodedData, $beginningPos, strrpos($encodedData, '~pocketjs~') - $beginningPos);
                         $textData = substr($textData, 0, strrpos($textData, '}') + 1);
                         $data = json_decode($textData, true);
+                        // handle data
                         if (isset($data['command'])) {
                             if ($data['command'] == 'close') {
                                 $this->close($data['id']);
@@ -149,7 +144,8 @@ class Pocket {
                             }
                             //elseif ($data['command'] == 'alive') ;
                         } elseif (!isset($data['call'])) {
-                            echo "[SERVER] client[$i] kicked for: sending illegal data: no event specified" . $eol;
+                            // echo ($textData);
+                            echo "[SERVER] client[$i] kicked for: sending illegal data: no event specified $textData" . $eol;
                             $this->close($i);
                         } elseif (isset($this->on[$data['call']])) {
                             if (isset($data['args'])) {
@@ -195,8 +191,8 @@ class Pocket {
     public function send($call, $id) {
         global $eol, $cli;
         if (!isset($this->c[$id])) {
-            $e = array_shift(debug_backtrace());
-            echo "[ERROR] client $id does not exist ({$e['file']}:{$e['line']})" . $eol;
+            echo "[ERROR] client $id does not exist" . $eol;
+            debug_print_backtrace();
             return false;
         }
         $data = array('call' => $call);
@@ -226,12 +222,12 @@ class Pocket {
         global $eol, $cli;
         //error handling
         if (func_num_args() < 1) {
-            $e = array_shift(debug_backtrace());
-            echo "[ERROR] function 'call()' requires an event name ({$e['file']}:{$e['line']})" . $eol;
+            echo "[ERROR] function 'call()' requires an event name" . $eol;
+            debug_print_backtrace();
             return false;
         } elseif (!isset($this->on[$n])) { //if given event is not defined, cannot be run
-            $e = array_shift(debug_backtrace());
-            echo "[ERROR] event '$n' does not exist ({$e['file']}:{$e['line']})" . $eol;
+            echo "[ERROR] event '$n' does not exist" . $eol;
+            debug_print_backtrace();
             return false; //error out of function
         }
         //get number of arguments for event callback
@@ -239,8 +235,8 @@ class Pocket {
         $z = new ReflectionFunction($this->on[$n]); //get callback closure as reflection function
         $x = $z->getNumberOfRequiredParameters(); //get number of parameters callback requires
         if (($x != $y) && ($x + 1 != $y)) { //if parameter amounts don't match, event cannot be run
-            $e = array_shift(debug_backtrace());
-            echo "[ERROR] event '$n' must be given $x arguments, $y given ({$e['file']}:{$e['line']})" . $eol;
+            echo "[ERROR] event '$n' must be given $x arguments, $y given" . $eol;
+            debug_print_backtrace();
             return false; //error out of function
         }
         if ($y == 0) $this->on[$n](); //if event has no arguments, run event by simply calling callback
@@ -251,39 +247,38 @@ class Pocket {
         global $eol, $cli;
         if (is_array($a)) $y = count($a); //if array passed in, arg num is length of array
         else {
-            $e = array_shift(debug_backtrace());
-            echo "[ERROR] param #2 of callArr() expected to be array -- use call() to pass in individual arguments ({$e['file']}:{$e['line']})" . $eol;
+            echo "[ERROR] param #2 of callArr() expected to be array -- use call() to pass in individual arguments" . $eol;
+            debug_print_backtrace();
             return false;
         }
         if (!isset($this->on[$n])) { //if given event is not defined, cannot be run
-            $e = array_shift(debug_backtrace());
-            echo "[ERROR] event '$n' does not exist ({$e['file']}:{$e['line']})" . $eol;
+            echo "[ERROR] event '$n' does not exist" . $eol;
+            debug_print_backtrace();
             return false; //error out of function
         }
         $y = count($a); //get number of params passed in to call()
         $z = new ReflectionFunction($this->on[$n]); //get callback closure as reflection function
         $x = $z->getNumberOfRequiredParameters(); //get number of parameters callback requires
         if ($x != $y) { //if parameter amounts don't match, event cannot be run
-            $e = array_shift(debug_backtrace());
-            echo "[ERROR] event '$n' must be given $x arguments, $y given ({$e['file']}:{$e['line']})" . $eol;
+            echo "[ERROR] event '$n' must be given $x arguments, $y given" . $eol;
             return false; //error out of function
         }
         call_user_func_array($this->on[$n], $a);
         return true;
     }
-    //function onOpen called to assign callback to or run event for user connection
-    public function onOpen($arg = null) {
+    //function onConn called to assign callback to or run event for user connection
+    public function onConn($arg = null) {
         global $eol, $cli;
         if (!isset($arg)) {
-            $e = array_shift(debug_backtrace());
-            echo "[ERROR] event 'onOpen' must be given client id or callback function ({$e['file']}:{$e['line']})" . $eol;
+            echo "[ERROR] event 'onConn' must be given client id or callback function" . $eol;
+            debug_print_backtrace();
             return false; //error out of function
         }
         else if (is_callable($arg)) {
             $x = new ReflectionFunction($arg);
             if ($x->getNumberOfRequiredParameters() > 1) {
-                $e = array_shift(debug_backtrace());
-                echo "[ERROR] callback for event 'onOpen' must have only 1 argument: client id ({$e['file']}:{$e['line']})" . $eol;
+                echo "[ERROR] callback for event 'onConn' must have only 1 argument: client id" . $eol;
+                debug_print_backtrace();
                 return false;
             } else $this->ev['open'] = $arg;
         }
@@ -300,15 +295,15 @@ class Pocket {
     public function onClose ($arg = null) {
         global $eol, $cli;
         if (!isset($arg)) {
-            $e = array_shift(debug_backtrace());
-            echo "[ERROR] event 'onClose' must be given client id or callback function ({$e['file']}:{$e['line']})" . $eol;
+            echo "[ERROR] event 'onClose' must be given client id or callback function" . $eol;
+            debug_print_backtrace();
             return false; //error out of function
         }
         else if (is_callable($arg)) {
             $x = new ReflectionFunction($arg);
             if ($x->getNumberOfRequiredParameters() > 1) {
-                $e = array_shift(debug_backtrace());
-                echo "[ERROR] callback for event 'onClose' must have only 1 argument: client id ({$e['file']}:{$e['line']})" . $eol;
+                echo "[ERROR] callback for event 'onClose' must have only 1 argument: client id" . $eol;
+                debug_print_backtrace();
                 return false;
             } else $this->ev['close'] = $arg;
         }

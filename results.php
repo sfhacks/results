@@ -2,15 +2,15 @@
 
 require('pocket.php');
 
-$ip = isset($argv[3]) && is_string($argv[3]) && trim($argv[3]) != '' ? $argv[3] : '127.0.0.1';
-$pocket = new Pocket($ip, 7998, 10, 1);
+$ip = $argv[2];
+$port = $argv[3];
+$pocket = new Pocket($ip, $port, 10, 1);
 $snapshot = '';
 
 // event for pushing updates to clients
-$pocket->bind('update', function () {
-    global $pocket;
+$pocket->bind('update', function () use (&$pocket, &$snapshot) {
     // get database
-    if (($db = file_get_contents('db.json')) === false)
+    if (($db = file_get_contents(realpath(dirname(__FILE__)) . '/db.json')) === false)
         return;
     if (trim($db) == '') return;
     // check for updates
@@ -24,8 +24,7 @@ $pocket->bind('update', function () {
 });
 
 // update clients indefinitely
-$pocket->onRun(function () {
-    global $pocket;
+$pocket->onRun(function () use (&$pocket) {
     $pocket->call('update');
 });
 

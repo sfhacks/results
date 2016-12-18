@@ -15,7 +15,7 @@
                 rest: "<?php echo basename($_SERVER['PHP_SELF'])?>",
                 pocket: {
                     domain: document.domain,
-                    port: 7998,
+                    port: 8003,
                     page: 'results.php'
                 }
             };
