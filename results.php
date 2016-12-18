@@ -24,7 +24,7 @@ $pocket->bind('update', function () use (&$pocket, &$snapshot) {
 });
 
 // event for pushing database to clients
-$pocket->bind('update', function () use (&$pocket, &$snapshot) {
+$pocket->bind('pull', function () use (&$pocket, &$snapshot) {
     // get database
     if (($db = file_get_contents(realpath(dirname(__FILE__)) . '/db.json')) === false)
         return;
