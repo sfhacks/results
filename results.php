@@ -23,6 +23,16 @@ $pocket->bind('update', function () use (&$pocket, &$snapshot) {
     }
 });
 
+// event for pushing database to clients
+$pocket->bind('update', function () use (&$pocket, &$snapshot) {
+    // get database
+    if (($db = file_get_contents(realpath(dirname(__FILE__)) . '/db.json')) === false)
+        return;
+    if (trim($db) == '') return;
+    // push updates to all
+    $pocket->sendAll('update', $db);
+});
+
 // update clients indefinitely
 $pocket->onRun(function () use (&$pocket) {
     $pocket->call('update');

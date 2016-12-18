@@ -120,6 +120,9 @@ $(document).ready(function () {
     });
     pocket.onOpen(function () {
         $('#table table').html("<tr class = 'darker'><th>Connected</th></tr>");
+        setTimeout(function () {
+            pocket.send('pull');
+        }, 1500);
     });
     pocket.onClose(function () {
         $('#table table').html("<tr class = 'darker'><th>Disconnected</th></tr>");
