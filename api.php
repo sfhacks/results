@@ -5,6 +5,8 @@ $db = '../db.json';
 $pwds = '../passwords.json';
 
 $passwords = json_decode(file_get_contents($pwds), true);
+error_reporting(E_ALL);
+
 $answer = isset($passwords['correct']) ? $passwords['correct'] : 'true';
 if (isset($_POST['password'])) {
     if ($_POST['password'] === $passwords['password']) {
